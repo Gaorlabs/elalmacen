@@ -1,0 +1,6 @@
+{
+  "name": "El Almacén - Delivery & Catálogo",
+  "description": "Catálogo interactivo y pedidos directos por WhatsApp de El Almacén: belleza, tecnología, regalos, morrales y novedades con entrega rápida.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@layer utilities {
+  @keyframes floatGentle {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-8px) rotate(0.8deg);
+    }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.35), 0 0 40px rgba(37, 99, 235, 0.2);
+      transform: scale(1);
+    }
+    50% {
+      box-shadow: 0 0 32px rgba(239, 68, 68, 0.6), 0 0 60px rgba(37, 99, 235, 0.35);
+      transform: scale(1.02);
+    }
+  }
+
+  .animate-float-gentle {
+    animation: floatGentle 3.8s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 2.4s ease-in-out infinite;
+  }
+}
+
+/* Hide scrollbar for native app feel */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom smooth transitions */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
