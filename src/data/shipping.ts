@@ -6,7 +6,8 @@ export const BUSINESS_CONFIG = {
   whatsappNumber: '51958607999',
   whatsappDisplay: '+51 958 607 999',
   supportHours: 'Lunes a Domingo de 8:00 AM a 10:00 PM',
-  city: 'Perú'
+  city: 'Perú',
+  logoUrl: '/assets/aistudio/WhatsApp_Image_2026-10-17_at_12.27.58_PM_f3242823.jpeg'
 };
 
 export const DISTRICTS: DistrictDelivery[] = [

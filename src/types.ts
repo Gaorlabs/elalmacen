@@ -5,7 +5,12 @@ export type CategoryId =
   | 'juguetes'
   | 'libreria'
   | 'regalos'
-  | 'audio';
+  | 'audio'
+  | 'celulares'
+  | 'mascotas'
+  | 'hogar'
+  | 'ropa_mujer'
+  | 'joyeria';
 
 export interface ProductVariant {
   id: string;

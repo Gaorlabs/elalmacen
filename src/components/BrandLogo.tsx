@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface BrandLogoProps {
   className?: string;
@@ -13,12 +13,36 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   showSubtitle = true,
   withFloating = false
 }) => {
+  const [imageError, setImageError] = useState(false);
+
   const sizeMap = {
     sm: 'w-24',
     md: 'w-36',
     lg: 'w-52',
     xl: 'w-64 sm:w-72'
   };
+
+  if (!imageError) {
+    return (
+      <div
+        className={`relative inline-flex flex-col items-center select-none ${
+          withFloating ? 'animate-float-gentle' : ''
+        } ${className}`}
+      >
+        <img
+          src="/assets/aistudio/WhatsApp_Image_2026-10-17_at_12.27.58_PM_f3242823.jpeg"
+          alt="El Almacén - Todo en solo lugar"
+          className={`${sizeMap[size]} h-auto object-contain rounded-2xl drop-shadow-xl transition-transform hover:scale-105 duration-300`}
+          onError={() => setImageError(true)}
+        />
+        {showSubtitle && (
+          <span className="mt-2 text-xs font-bold tracking-wider uppercase text-rose-600 dark:text-rose-400">
+            Todo en solo lugar &bull; Delivery Oficial
+          </span>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div

@@ -16,9 +16,9 @@ const MainAppContent: React.FC = () => {
   const { showSplash, activeTab } = useApp();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 selection:bg-rose-500 selection:text-white antialiased flex flex-col">
-      {/* Naturally Responsive Container (full-width on mobile, centered max-w-4xl on desktop) */}
-      <div className="w-full max-w-4xl mx-auto min-h-screen flex flex-col relative transition-colors bg-white dark:bg-slate-900 shadow-xs">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 text-slate-800 dark:text-slate-100 antialiased flex flex-col">
+      {/* Naturally Responsive Container (full-width on mobile, max-w-7xl on desktop like SHEIN) */}
+      <div className="w-full max-w-7xl mx-auto min-h-screen flex flex-col relative transition-colors bg-white dark:bg-slate-900 shadow-sm">
         {showSplash ? (
           <SplashScreen />
         ) : (

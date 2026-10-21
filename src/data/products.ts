@@ -65,10 +65,152 @@ export const CATEGORIES: CategoryInfo[] = [
     color: 'from-red-500 to-rose-500',
     description: 'Cajas sorpresa y Peluches',
     image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'celulares',
+    name: 'Celulares & Fundas',
+    icon: 'Smartphone',
+    color: 'from-amber-400 to-rose-500',
+    description: 'Fundas estéticas, protectores y accesorios',
+    image: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'ropa_mujer',
+    name: 'Ropa de Mujer',
+    icon: 'ShoppingBag',
+    color: 'from-pink-600 to-rose-600',
+    description: 'Vestidos, tops, enterizos y tendencias',
+    image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'hogar',
+    name: 'Hogar & Vida',
+    icon: 'Home',
+    color: 'from-emerald-500 to-teal-600',
+    description: 'Organizadores, termos y decoración',
+    image: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80'
+  },
+  {
+    id: 'joyeria',
+    name: 'Joyería & Accesorios',
+    icon: 'Sparkles',
+    color: 'from-yellow-500 to-amber-600',
+    description: 'Collares, lentes, anillos y bisutería',
+    image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=600&q=80'
   }
 ];
 
+export interface SheinCircularCategory {
+  id: CategoryId | 'todos';
+  name: string;
+  image: string;
+}
+
+export const SHEIN_CIRCULAR_CATEGORIES: SheinCircularCategory[] = [
+  { id: 'ropa_mujer', name: 'Mujer', image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=300&q=80' },
+  { id: 'ropa_mujer', name: 'Curvy', image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=300&q=80' },
+  { id: 'juguetes', name: 'Niños', image: 'https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=300&q=80' },
+  { id: 'moda', name: 'Hombre', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80' },
+  { id: 'tecnologia', name: 'Automotriz', image: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=300&q=80' },
+  { id: 'ropa_mujer', name: 'Partes superiores', image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=300&q=80' },
+  { id: 'ropa_mujer', name: 'Pantalones y faldas', image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=300&q=80' },
+  { id: 'ropa_mujer', name: 'Enterizos', image: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=300&q=80' },
+  { id: 'joyeria', name: 'Joyería y Acc.', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=300&q=80' },
+  { id: 'belleza', name: 'Belleza y Skincare', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=300&q=80' },
+  { id: 'celulares', name: 'Celulares y Fundas', image: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?auto=format&fit=crop&w=300&q=80' },
+  { id: 'hogar', name: 'Hogar y Vida', image: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=300&q=80' },
+  { id: 'juguetes', name: 'Juguetes y Juegos', image: 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?auto=format&fit=crop&w=300&q=80' },
+  { id: 'juguetes', name: 'Bebé', image: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=300&q=80' },
+  { id: 'libreria', name: 'Útiles y Oficina', image: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=300&q=80' },
+  { id: 'ropa_mujer', name: 'Bodysuits', image: 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?auto=format&fit=crop&w=300&q=80' }
+];
+
 export const PRODUCTS: Product[] = [
+  // --- PRODUCTOS DESTACADOS TIPO SHEIN (Exactos de la imagen) ---
+  {
+    id: 'shein-case-dots',
+    name: 'Funda para Celular Polka Dots & Corazones Minimalist',
+    subtitle: 'Carcasa estética de silicona suave con patrón de puntos y corazones',
+    category: 'celulares',
+    categoryName: 'Celulares & Fundas',
+    price: 10.30,
+    originalPrice: 22.00,
+    rating: 4.9,
+    reviewsCount: 342,
+    image: 'https://images.unsplash.com/photo-1586105251261-72a756497a11?auto=format&fit=crop&w=800&q=80',
+    badge: 'Más Vendido',
+    description: 'Funda protectora estética con diseño minimalista de corazones y lunares. Protección antigolpes para cámara y bordes reforzados.',
+    highlights: ['Borde de silicona antigolpes', 'Acabado mate sedoso', 'Compatible con carga inalámbrica'],
+    variants: [
+      { id: 'dots-crema', name: 'Crema / Puntos Negros' },
+      { id: 'dots-rosa', name: 'Rosa Pastel / Corazones' },
+      { id: 'dots-negro', name: 'Negro Minimal' }
+    ],
+    stock: 45
+  },
+  {
+    id: 'shein-pet-overalls',
+    name: 'Enterizo Overalls Divertido para Perro Mascota',
+    subtitle: 'Disfraz enterizo con diseño de overol de mezclilla suave',
+    category: 'mascotas',
+    categoryName: 'Moda & Mascotas',
+    price: 20.38,
+    originalPrice: 38.00,
+    rating: 4.9,
+    reviewsCount: 289,
+    image: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80',
+    badge: 'Más Vendido',
+    description: 'Enterizo cómodo y suave para perros y gatos. Tela elástica transpirable que permite libre movimiento para paseos o fotos virales.',
+    highlights: ['100% Algodón suave', 'Fácil de lavar', 'Broches de ajuste rápido'],
+    variants: [
+      { id: 'overalls-s', name: 'Talla S (Razas pequeñas)' },
+      { id: 'overalls-m', name: 'Talla M (Pug / Frenchie)' },
+      { id: 'overalls-l', name: 'Talla L (Cocker / Mediano)', priceModifier: 4.00 }
+    ],
+    stock: 28
+  },
+  {
+    id: 'shein-case-glitter',
+    name: 'Funda Glitter Brillante Transparente Anti-Caídas',
+    subtitle: 'Funda con destellos brillantes en degradé premium',
+    category: 'celulares',
+    categoryName: 'Celulares & Fundas',
+    price: 9.29,
+    originalPrice: 19.90,
+    rating: 4.8,
+    reviewsCount: 412,
+    image: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=800&q=80',
+    badge: 'Oferta Top',
+    description: 'Carcasa transparente con destellos de purpurina incrustada que nunca se desprenden ni decoloran. Acrílico rígido con esquinas con cámara de aire.',
+    highlights: ['Glitter de larga duración', 'Bordes biselados', 'Protección militar anti-caídas'],
+    variants: [
+      { id: 'glitter-plata', name: 'Destellos Plateados' },
+      { id: 'glitter-rose', name: 'Oro Rosa Glitter' },
+      { id: 'glitter-purpura', name: 'Púrpura Galáctico' }
+    ],
+    stock: 60
+  },
+  {
+    id: 'shein-vestido-floral',
+    name: 'Vestido Bohemio Floral de Verano Escote V',
+    subtitle: 'Corte acampanado con tirantes ajustables y caída fluida',
+    category: 'ropa_mujer',
+    categoryName: 'Ropa de Mujer',
+    price: 34.90,
+    originalPrice: 65.00,
+    rating: 4.9,
+    reviewsCount: 520,
+    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80',
+    badge: 'Más Vendido',
+    description: 'Vestido floral fresco y vaporoso, perfecto para salidas casuales o eventos. Tejido suave con cintura elástica que favorece la silueta.',
+    highlights: ['Tejido transpirable fresco', 'Estampado de alta definición', 'Tirantes regulables'],
+    variants: [
+      { id: 'vestido-s', name: 'Talla S (36)' },
+      { id: 'vestido-m', name: 'Talla M (38)' },
+      { id: 'vestido-l', name: 'Talla L (40)' }
+    ],
+    stock: 35
+  },
   // 1. Crema solar FREZYDERM
   {
     id: 'frezyderm-velvet-spf50',

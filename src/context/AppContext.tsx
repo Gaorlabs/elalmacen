@@ -106,7 +106,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
-  // Splash screen state
+  // Splash / Portal screen state (true by default so the Portal is shown first as requested)
   const [showSplash, setShowSplash] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<AppTab>('inicio');
 

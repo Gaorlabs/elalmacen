@@ -7,8 +7,8 @@ export const BottomNav: React.FC = () => {
   const { activeTab, setActiveTab, favorites, cartCount, openCartDrawer } = useApp();
 
   return (
-    <div className="sticky bottom-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200/90 dark:border-slate-800 transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.06)] mt-auto pb-[env(safe-area-inset-bottom,0px)]">
-      <nav className="w-full max-w-4xl mx-auto px-4 h-16 flex items-center justify-around">
+    <div className="md:hidden sticky bottom-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200/90 dark:border-slate-800 transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.06)] mt-auto pb-[env(safe-area-inset-bottom,0px)]">
+      <nav className="w-full max-w-7xl mx-auto px-4 h-15 flex items-center justify-around">
         {/* Inicio */}
         <button
           onClick={() => setActiveTab('inicio')}

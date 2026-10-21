@@ -1,19 +1,14 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { BrandLogo } from './BrandLogo';
-import { CATEGORIES, PRODUCTS } from '../data/products';
+import { PRODUCTS } from '../data/products';
 import { BUSINESS_CONFIG } from '../data/shipping';
-import { CategoryId, Product } from '../types';
+import { Product } from '../types';
 import {
   ArrowRight,
-  ShieldCheck,
-  Truck,
   Sparkles,
-  Zap,
   Moon,
   Sun,
-  Flame,
-  Star
+  Flame
 } from 'lucide-react';
 
 export const SplashScreen: React.FC = () => {
@@ -29,12 +24,6 @@ export const SplashScreen: React.FC = () => {
   const handleEnterCatalog = () => {
     setSelectedCategory('todos');
     setActiveTab('inicio');
-    setShowSplash(false);
-  };
-
-  const handleCategorySelect = (categoryId: CategoryId) => {
-    setSelectedCategory(categoryId);
-    setActiveTab('explorar');
     setShowSplash(false);
   };
 
@@ -71,20 +60,39 @@ export const SplashScreen: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="w-full max-w-md mx-auto px-4 py-2 flex-1 flex flex-col items-center justify-center text-center z-10">
-        {/* Floating Brand Logo */}
-        <div className="relative mb-2 flex flex-col items-center">
-          <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-yellow-400/20 to-blue-500/20 rounded-full blur-2xl scale-125 pointer-events-none" />
-          <BrandLogo size="lg" withFloating={true} showSubtitle={false} />
+        
+        {/* Circular Emblem Frame with Official Brand Logo (Reemplaza flores con el logo y colores de la web) */}
+        <div className="relative my-3 flex flex-col items-center">
+          {/* Luminous Glow Halo with web coral-rose colors */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#FA436B]/40 via-[#FF5876]/40 to-yellow-400/30 rounded-full blur-2xl scale-150 pointer-events-none" />
+          
+          <div className="relative p-2.5 sm:p-3 rounded-full bg-gradient-to-br from-[#FA436B] via-[#FF5876] to-[#FA7088] shadow-2xl border-2 border-white/90">
+            <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-white flex items-center justify-center p-3 shadow-inner overflow-hidden">
+              <img
+                src={BUSINESS_CONFIG.logoUrl}
+                alt="El Almacén - Todo en solo lugar"
+                className="w-full h-full object-contain filter drop-shadow-md hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+
+            {/* Emblem badge */}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-900 font-black text-[10px] px-3.5 py-0.5 rounded-full shadow-lg border border-white uppercase tracking-wider whitespace-nowrap">
+              ⭐ Todo en solo lugar ⭐
+            </div>
+          </div>
         </div>
 
-        {/* Minimal punchy title */}
-        <div className="space-y-0.5">
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+        {/* Brand Title with web gradient */}
+        <div className="space-y-1 mt-2">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase drop-shadow-xs">
             El Almacén
           </h1>
-          <p className="text-xs sm:text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-amber-600 to-blue-600 dark:from-rose-400 dark:via-amber-300 dark:to-blue-400">
-            ¡Todo en solo lugar! Cosmética, Tecnología, Morrales & Regalos
+          <p className="text-xs sm:text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FA436B] via-rose-500 to-amber-500">
+            ¡Novedades, Morrales, Cosmética, Juguetes & Regalos!
           </p>
+          <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300">
+            <span>💜 Yape: {BUSINESS_CONFIG.whatsappDisplay}</span>
+          </div>
         </div>
 
         {/* Visual Mini Gallery: "Lo más pedido en fotos" */}
@@ -131,42 +139,12 @@ export const SplashScreen: React.FC = () => {
         <div className="w-full mt-4 p-4 rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-rose-200 dark:border-slate-700 shadow-2xl animate-pulse-glow flex flex-col items-center">
           <button
             onClick={handleEnterCatalog}
-            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-rose-600 via-red-500 to-rose-600 hover:from-rose-500 hover:to-red-600 text-white font-black text-base shadow-lg shadow-rose-500/35 active:scale-98 transition-all flex items-center justify-center gap-3 group"
+            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-[#FA436B] via-[#FF5876] to-[#FA7088] hover:opacity-95 text-white font-black text-base sm:text-lg shadow-xl shadow-[#FA436B]/40 active:scale-98 transition-all flex items-center justify-center gap-3 group cursor-pointer"
           >
-            <span>Ingresar al Catálogo</span>
+            <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
+            <span className="tracking-wide uppercase">Ingresar al Catálogo</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
           </button>
-        </div>
-
-        {/* Compact Visual Trust Chips (NO long text blocks!) */}
-        <div className="w-full mt-3 grid grid-cols-4 gap-1.5">
-          <div className="p-2 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 backdrop-blur-xs flex flex-col items-center justify-center text-center">
-            <Sparkles className="w-4 h-4 text-rose-500 mb-0.5" />
-            <span className="text-[10px] font-extrabold text-slate-800 dark:text-slate-200 leading-none">
-              Novedades
-            </span>
-          </div>
-
-          <div className="p-2 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 backdrop-blur-xs flex flex-col items-center justify-center text-center">
-            <ShieldCheck className="w-4 h-4 text-emerald-500 mb-0.5" />
-            <span className="text-[10px] font-extrabold text-slate-800 dark:text-slate-200 leading-none">
-              Yape / BCP
-            </span>
-          </div>
-
-          <div className="p-2 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 backdrop-blur-xs flex flex-col items-center justify-center text-center">
-            <Star className="w-4 h-4 text-amber-500 mb-0.5" />
-            <span className="text-[10px] font-extrabold text-slate-800 dark:text-slate-200 leading-none">
-              100% Original
-            </span>
-          </div>
-
-          <div className="p-2 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 backdrop-blur-xs flex flex-col items-center justify-center text-center">
-            <Zap className="w-4 h-4 text-blue-500 mb-0.5" />
-            <span className="text-[10px] font-extrabold text-slate-800 dark:text-slate-200 leading-none">
-              WhatsApp
-            </span>
-          </div>
         </div>
       </main>
 

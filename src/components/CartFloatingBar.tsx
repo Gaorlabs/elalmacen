@@ -8,8 +8,8 @@ export const CartFloatingBar: React.FC = () => {
   if (cartCount === 0 || isCartDrawerOpen || isCheckoutOpen) return null;
 
   return (
-    <div className="sticky bottom-20 z-30 px-3 -mt-16 pointer-events-none transition-all duration-300 w-full">
-      <div className="w-full max-w-4xl mx-auto pointer-events-auto">
+    <div className="sticky bottom-20 z-30 px-3 -mt-16 pointer-events-none transition-all duration-300 w-full md:hidden">
+      <div className="w-full max-w-7xl mx-auto pointer-events-auto">
         <button
           onClick={openCartDrawer}
           className="w-full bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 dark:from-rose-600 dark:via-red-600 dark:to-rose-700 text-white rounded-2xl p-3.5 shadow-2xl flex items-center justify-between border border-rose-500/40 hover:scale-[1.01] active:scale-98 transition-all duration-200 group animate-bounce-short"
