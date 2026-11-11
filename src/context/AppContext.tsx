@@ -359,7 +359,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Admin Auth State
   const [adminPin, setAdminPin] = useState<string>(() => {
-    return localStorage.getItem('el_almacen_admin_pin') || '1234';
+    const saved = localStorage.getItem('el_almacen_admin_pin');
+    if (!saved || saved === '1234') {
+      localStorage.setItem('el_almacen_admin_pin', 'almacen26');
+      return 'almacen26';
+    }
+    return saved;
   });
 
   const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {

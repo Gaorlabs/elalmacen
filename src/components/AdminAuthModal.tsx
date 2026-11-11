@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { ShieldCheck, Lock, Eye, EyeOff, X, KeyRound } from 'lucide-react';
+import { ShieldCheck, Lock, Eye, EyeOff, X } from 'lucide-react';
 
 export const AdminAuthModal: React.FC = () => {
-  const { isAdminModalOpen, closeAdminModal, unlockAdmin, adminPin } = useApp();
+  const { isAdminModalOpen, closeAdminModal, unlockAdmin } = useApp();
   const [pinInput, setPinInput] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -21,15 +21,8 @@ export const AdminAuthModal: React.FC = () => {
       setPinInput('');
       setErrorMsg('');
     } else {
-      setErrorMsg('PIN incorrecto. Intente con el PIN por defecto: 1234');
+      setErrorMsg('Contraseña o PIN incorrecto. Intente nuevamente.');
     }
-  };
-
-  const handleQuickDemoAccess = () => {
-    setPinInput(adminPin || '1234');
-    unlockAdmin(adminPin || '1234');
-    setPinInput('');
-    setErrorMsg('');
   };
 
   return (
@@ -59,31 +52,13 @@ export const AdminAuthModal: React.FC = () => {
         {/* Content */}
         <div className="p-6 space-y-5">
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-            Ingrese su clave o PIN de seguridad para gestionar el catálogo de productos, precios, inventario y datos de la empresa desde su celular.
+            Ingrese su clave o contraseña de administrador para gestionar productos, precios, inventario y datos de la empresa.
           </p>
-
-          {/* Helper Badge for PIN */}
-          <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <KeyRound className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-              <div className="text-xs">
-                <span className="font-extrabold text-amber-900 dark:text-amber-200 block">PIN por defecto: 1234</span>
-                <span className="text-amber-700 dark:text-amber-400 text-[11px]">Puede cambiar este PIN en la configuración.</span>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleQuickDemoAccess}
-              className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-[11px] shadow-xs shrink-0 cursor-pointer transition-transform active:scale-95"
-            >
-              Entrar Ya ⚡
-            </button>
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-black uppercase text-slate-700 dark:text-slate-300 mb-1.5">
-                PIN de Seguridad (4 a 8 dígitos)
+                Contraseña de Administrador
               </label>
               <div className="relative flex items-center">
                 <Lock className="w-4 h-4 absolute left-3.5 text-slate-400 pointer-events-none" />
@@ -94,9 +69,9 @@ export const AdminAuthModal: React.FC = () => {
                     setPinInput(e.target.value);
                     if (errorMsg) setErrorMsg('');
                   }}
-                  placeholder="Ingrese PIN (ej. 1234)"
-                  maxLength={12}
-                  className="w-full text-sm pl-10 pr-10 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-[#FA436B]"
+                  placeholder="Ingrese contraseña"
+                  maxLength={30}
+                  className="w-full text-sm pl-10 pr-10 py-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-[#FA436B]"
                   autoFocus
                 />
                 <button
