@@ -18,6 +18,7 @@ import {
   Flame,
   Sparkles,
   ShieldCheck,
+  QrCode,
   X
 } from 'lucide-react';
 
@@ -37,7 +38,8 @@ export const Header: React.FC = () => {
     setShowSplash,
     openAdminModal,
     isAdminUnlocked,
-    businessConfig
+    businessConfig,
+    openQRModal
   } = useApp();
 
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
@@ -121,6 +123,16 @@ export const Header: React.FC = () => {
           >
             <Sparkles className="w-3 h-3 text-amber-300" />
             <span>Portada</span>
+          </button>
+
+          {/* Botón para abrir QR Catálogo */}
+          <button
+            onClick={openQRModal}
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-black rounded-full bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 shadow-xs transition-all active:scale-95 cursor-pointer"
+            title="Ver y descargar Código QR del Catálogo"
+          >
+            <QrCode className="w-3.5 h-3.5 text-amber-300" />
+            <span>QR Catálogo</span>
           </button>
 
           {/* Botón Acceso Panel de Administración */}

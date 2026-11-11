@@ -12,10 +12,11 @@ import { AdminAuthModal } from './components/AdminAuthModal';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
+import { QRCodeModal } from './components/QRCodeModal';
 import { ToastContainer } from './components/ToastContainer';
 
 const MainAppContent: React.FC = () => {
-  const { showSplash, activeTab } = useApp();
+  const { showSplash, activeTab, isQRModalOpen, closeQRModal } = useApp();
 
   return (
     <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 text-slate-800 dark:text-slate-100 antialiased flex flex-col">
@@ -49,6 +50,7 @@ const MainAppContent: React.FC = () => {
         <CartDrawer />
         <CheckoutModal />
         <AdminAuthModal />
+        <QRCodeModal isOpen={isQRModalOpen} onClose={closeQRModal} />
 
         {/* Floating notifications */}
         <ToastContainer />

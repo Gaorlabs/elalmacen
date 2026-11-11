@@ -30,7 +30,8 @@ import {
   Globe2,
   RefreshCw,
   Upload,
-  Camera
+  Camera,
+  QrCode
 } from 'lucide-react';
 import {
   getSupabaseCredentials,
@@ -83,7 +84,8 @@ export const AdminTab: React.FC = () => {
     setShowSplash,
     showToast,
     isSupabaseConnected,
-    reloadFromSupabase
+    reloadFromSupabase,
+    openQRModal
   } = useApp();
 
   const [adminSubTab, setAdminSubTab] = useState<'productos' | 'categorias' | 'empresa' | 'pedidos'>('productos');
@@ -385,6 +387,15 @@ export const AdminTab: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={openQRModal}
+              className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-900 text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+              title="Descargar o Compartir Código QR del Catálogo"
+            >
+              <QrCode className="w-4 h-4 text-slate-900" />
+              <span>Código QR</span>
+            </button>
+
             <button
               onClick={() => {
                 setShowSplash(false);

@@ -107,6 +107,9 @@ interface AppContextType {
   isCheckoutOpen: boolean;
   openCheckout: () => void;
   closeCheckout: () => void;
+  isQRModalOpen: boolean;
+  openQRModal: () => void;
+  closeQRModal: () => void;
 
   // Admin Auth & State
   isAdminUnlocked: boolean;
@@ -522,6 +525,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
   const closeCheckout = () => setIsCheckoutOpen(false);
 
+  const [isQRModalOpen, setIsQRModalOpen] = useState<boolean>(false);
+  const openQRModal = () => setIsQRModalOpen(true);
+  const closeQRModal = () => setIsQRModalOpen(false);
+
   // Favorites
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
@@ -786,6 +793,9 @@ ${order.discount > 0 ? `(Descuento aplicado: -S/ ${order.discount.toFixed(2)})\n
         isCheckoutOpen,
         openCheckout,
         closeCheckout,
+        isQRModalOpen,
+        openQRModal,
+        closeQRModal,
         isAdminUnlocked,
         isAdminModalOpen,
         adminPin,

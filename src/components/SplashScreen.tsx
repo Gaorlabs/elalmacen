@@ -7,7 +7,8 @@ import {
   Moon,
   Sun,
   Flame,
-  ShieldCheck
+  ShieldCheck,
+  QrCode
 } from 'lucide-react';
 
 export const SplashScreen: React.FC = () => {
@@ -21,7 +22,8 @@ export const SplashScreen: React.FC = () => {
     openAdminModal,
     isAdminUnlocked,
     businessConfig,
-    products
+    products,
+    openQRModal
   } = useApp();
 
   const handleEnterCatalog = () => {
@@ -53,6 +55,15 @@ export const SplashScreen: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-1.5">
+          <button
+            onClick={openQRModal}
+            className="p-1.5 px-2.5 rounded-full bg-slate-900 text-amber-300 text-[10px] font-extrabold shadow-xs border border-amber-500/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
+            title="Ver y descargar Código QR del Catálogo"
+          >
+            <QrCode className="w-3.5 h-3.5 text-amber-300" />
+            <span>QR</span>
+          </button>
+
           <button
             onClick={openAdminModal}
             className="p-1.5 px-2.5 rounded-full bg-slate-900 text-amber-300 text-[10px] font-extrabold shadow-xs border border-amber-500/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
