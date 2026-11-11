@@ -4,13 +4,32 @@ import {
   ProductVariant,
   CartItem,
   Order,
+  OrderStatus,
   AppTab,
   CategoryId,
+  CategoryInfo,
   DeliveryFormData,
-  PaymentMethodType
+  PaymentMethodType,
+  BusinessConfig
 } from '../types';
+import { PRODUCTS, CATEGORIES } from '../data/products';
 import { DISCOUNT_COUPONS, BUSINESS_CONFIG, PAYMENT_ACCOUNTS } from '../data/shipping';
 import confetti from 'canvas-confetti';
+import {
+  getSupabaseCredentials,
+  fetchSupabaseProducts,
+  upsertSupabaseProduct,
+  deleteSupabaseProduct,
+  fetchSupabaseCategories,
+  upsertSupabaseCategory,
+  deleteSupabaseCategory,
+  fetchSupabaseBusinessConfig,
+  upsertSupabaseBusinessConfig,
+  fetchSupabaseOrders,
+  upsertSupabaseOrder,
+  deleteSupabaseOrder,
+  setupSupabaseRealtimeSync
+} from '../services/supabase';
 
 interface ToastMessage {
   id: string;
@@ -29,7 +48,26 @@ interface AppContextType {
   activeTab: AppTab;
   setActiveTab: (tab: AppTab) => void;
 
-  // Catalog & Filters
+  // Catalog & Products (Dynamic for Admin)
+  products: Product[];
+  addProduct: (productData: Omit<Product, 'id'>) => Product;
+  updateProduct: (id: string, updated: Partial<Product>) => void;
+  deleteProduct: (id: string) => void;
+  toggleProductStock: (id: string) => void;
+  resetCatalogToDefaults: () => void;
+
+  // Categories (Dynamic for Admin)
+  categories: CategoryInfo[];
+  addCategory: (catData: Omit<CategoryInfo, 'id'>) => CategoryInfo;
+  updateCategory: (id: string, updated: Partial<CategoryInfo>) => void;
+  deleteCategory: (id: string) => void;
+  resetCategoriesToDefaults: () => void;
+
+  // Business & Store Config (Dynamic for Admin)
+  businessConfig: BusinessConfig;
+  updateBusinessConfig: (newConfig: Partial<BusinessConfig>) => void;
+
+  // Catalog Filters
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   selectedCategory: CategoryId | 'todos';
@@ -70,6 +108,21 @@ interface AppContextType {
   openCheckout: () => void;
   closeCheckout: () => void;
 
+  // Admin Auth & State
+  isAdminUnlocked: boolean;
+  isAdminModalOpen: boolean;
+  adminPin: string;
+  openAdminModal: () => void;
+  closeAdminModal: () => void;
+  unlockAdmin: (pinInput: string) => boolean;
+  lockAdmin: () => void;
+  updateAdminPin: (newPin: string) => void;
+
+  // Orders Log (Admin)
+  orders: Order[];
+  updateOrderStatus: (orderId: string, status: OrderStatus) => void;
+  deleteOrder: (orderId: string) => void;
+
   // Favorites
   favorites: string[];
   toggleFavorite: (productId: string) => void;
@@ -78,6 +131,10 @@ interface AppContextType {
   // Order Placement & WhatsApp
   placeOrder: (paymentMethod: PaymentMethodType) => Order;
   sendOrderToWhatsApp: (order: Order) => void;
+
+  // Supabase Realtime Cloud Sync
+  isSupabaseConnected: boolean;
+  reloadFromSupabase: () => Promise<void>;
 
   // Toast
   toasts: ToastMessage[];
@@ -106,9 +163,285 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const toggleDarkMode = () => setIsDarkMode(prev => !prev);
 
-  // Splash / Portal screen state (true by default so the Portal is shown first as requested)
+  // Splash / Portal screen state
   const [showSplash, setShowSplash] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<AppTab>('inicio');
+
+  // Dynamic Products State (Persisted in localStorage)
+  const [products, setProducts] = useState<Product[]>(() => {
+    try {
+      const saved = localStorage.getItem('el_almacen_products');
+      return saved ? JSON.parse(saved) : PRODUCTS;
+    } catch {
+      return PRODUCTS;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('el_almacen_products', JSON.stringify(products));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [products]);
+
+  // Dynamic Categories State (Persisted in localStorage)
+  const [categories, setCategories] = useState<CategoryInfo[]>(() => {
+    try {
+      const saved = localStorage.getItem('el_almacen_categories');
+      return saved ? JSON.parse(saved) : CATEGORIES;
+    } catch {
+      return CATEGORIES;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('el_almacen_categories', JSON.stringify(categories));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [categories]);
+
+  // Dynamic Business Config State
+  const [businessConfig, setBusinessConfig] = useState<BusinessConfig>(() => {
+    try {
+      const saved = localStorage.getItem('el_almacen_config');
+      return saved ? JSON.parse(saved) : BUSINESS_CONFIG;
+    } catch {
+      return BUSINESS_CONFIG;
+    }
+  });
+
+  // Supabase Realtime Sync State
+  const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
+
+  const reloadFromSupabase = async () => {
+    const creds = getSupabaseCredentials();
+    if (!creds) {
+      setIsSupabaseConnected(false);
+      return;
+    }
+
+    setIsSupabaseConnected(true);
+
+    const [remoteProds, remoteCats, remoteConfig, remoteOrders] = await Promise.all([
+      fetchSupabaseProducts(),
+      fetchSupabaseCategories(),
+      fetchSupabaseBusinessConfig(),
+      fetchSupabaseOrders()
+    ]);
+
+    if (remoteProds && remoteProds.length > 0) setProducts(remoteProds);
+    if (remoteCats && remoteCats.length > 0) setCategories(remoteCats);
+    if (remoteConfig) setBusinessConfig(remoteConfig);
+    if (remoteOrders) setOrders(remoteOrders);
+  };
+
+  useEffect(() => {
+    reloadFromSupabase();
+
+    const channel = setupSupabaseRealtimeSync(
+      async () => {
+        const prods = await fetchSupabaseProducts();
+        if (prods) setProducts(prods);
+      },
+      async () => {
+        const cats = await fetchSupabaseCategories();
+        if (cats) setCategories(cats);
+      },
+      async () => {
+        const cfg = await fetchSupabaseBusinessConfig();
+        if (cfg) setBusinessConfig(cfg);
+      },
+      async () => {
+        const ords = await fetchSupabaseOrders();
+        if (ords) setOrders(ords);
+      }
+    );
+
+    return () => {
+      if (channel) channel.unsubscribe();
+    };
+  }, []);
+
+  const addCategory = (catData: Omit<CategoryInfo, 'id'>): CategoryInfo => {
+    const id = catData.name.toLowerCase().replace(/[^a-z0-9]/g, '_') || `cat_${Date.now()}`;
+    const newCat: CategoryInfo = { id, ...catData };
+    setCategories(prev => [...prev, newCat]);
+    upsertSupabaseCategory(newCat);
+    return newCat;
+  };
+
+  const updateCategory = (id: string, updated: Partial<CategoryInfo>) => {
+    setCategories(prev =>
+      prev.map(c => {
+        if (c.id === id) {
+          const nextCat = { ...c, ...updated };
+          upsertSupabaseCategory(nextCat);
+          return nextCat;
+        }
+        return c;
+      })
+    );
+  };
+
+  const deleteCategory = (id: string) => {
+    setCategories(prev => prev.filter(c => c.id !== id));
+    deleteSupabaseCategory(id);
+  };
+
+  const resetCategoriesToDefaults = () => {
+    setCategories(CATEGORIES);
+    localStorage.removeItem('el_almacen_categories');
+  };
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('el_almacen_config', JSON.stringify(businessConfig));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [businessConfig]);
+
+  const updateBusinessConfig = (newConfig: Partial<BusinessConfig>) => {
+    setBusinessConfig(prev => {
+      const merged = { ...prev, ...newConfig };
+      upsertSupabaseBusinessConfig(merged);
+      return merged;
+    });
+  };
+
+  // Product CRUD
+  const addProduct = (productData: Omit<Product, 'id'>): Product => {
+    const id = `prod-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const newProd: Product = { id, ...productData };
+    setProducts(prev => [newProd, ...prev]);
+    upsertSupabaseProduct(newProd);
+    return newProd;
+  };
+
+  const updateProduct = (id: string, updated: Partial<Product>) => {
+    setProducts(prev =>
+      prev.map(p => {
+        if (p.id === id) {
+          const nextProd = { ...p, ...updated };
+          upsertSupabaseProduct(nextProd);
+          return nextProd;
+        }
+        return p;
+      })
+    );
+  };
+
+  const deleteProduct = (id: string) => {
+    setProducts(prev => prev.filter(p => p.id !== id));
+    deleteSupabaseProduct(id);
+  };
+
+  const toggleProductStock = (id: string) => {
+    setProducts(prev =>
+      prev.map(p => {
+        if (p.id === id) {
+          const nextProd = { ...p, stock: p.stock > 0 ? 0 : 10 };
+          upsertSupabaseProduct(nextProd);
+          return nextProd;
+        }
+        return p;
+      })
+    );
+  };
+
+  const resetCatalogToDefaults = () => {
+    setProducts(PRODUCTS);
+    localStorage.removeItem('el_almacen_products');
+  };
+
+  // Admin Auth State
+  const [adminPin, setAdminPin] = useState<string>(() => {
+    return localStorage.getItem('el_almacen_admin_pin') || '1234';
+  });
+
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {
+    return sessionStorage.getItem('el_almacen_admin_unlocked') === 'true';
+  });
+
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(false);
+
+  const openAdminModal = () => {
+    if (isAdminUnlocked) {
+      setActiveTab('admin');
+      setShowSplash(false);
+    } else {
+      setIsAdminModalOpen(true);
+    }
+  };
+
+  const closeAdminModal = () => setIsAdminModalOpen(false);
+
+  const unlockAdmin = (pinInput: string): boolean => {
+    if (pinInput.trim() === adminPin) {
+      setIsAdminUnlocked(true);
+      sessionStorage.setItem('el_almacen_admin_unlocked', 'true');
+      setIsAdminModalOpen(false);
+      setActiveTab('admin');
+      setShowSplash(false);
+      showToast('¡Acceso concedido al Panel de Administración!', 'success');
+      return true;
+    }
+    return false;
+  };
+
+  const lockAdmin = () => {
+    setIsAdminUnlocked(false);
+    sessionStorage.removeItem('el_almacen_admin_unlocked');
+    setActiveTab('inicio');
+    showToast('Sesión administrativa cerrada', 'info');
+  };
+
+  const updateAdminPin = (newPin: string) => {
+    if (newPin && newPin.length >= 4) {
+      setAdminPin(newPin);
+      localStorage.setItem('el_almacen_admin_pin', newPin);
+    }
+  };
+
+  // Orders Log (Admin)
+  const [orders, setOrders] = useState<Order[]>(() => {
+    try {
+      const saved = localStorage.getItem('el_almacen_orders');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('el_almacen_orders', JSON.stringify(orders));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [orders]);
+
+  const updateOrderStatus = (orderId: string, status: OrderStatus) => {
+    setOrders(prev =>
+      prev.map(o => {
+        if (o.id === orderId) {
+          const updated = { ...o, status };
+          upsertSupabaseOrder(updated);
+          return updated;
+        }
+        return o;
+      })
+    );
+    showToast(`Estado del pedido cambiado a ${status}`, 'info');
+  };
+
+  const deleteOrder = (orderId: string) => {
+    setOrders(prev => prev.filter(o => o.id !== orderId));
+    deleteSupabaseOrder(orderId);
+  };
 
   // Search & Categories
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -136,7 +469,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [cart]);
 
-  // Delivery data (Nombre, Teléfono, Dirección, Referencia)
+  // Delivery data
   const [deliveryData, setDeliveryData] = useState<DeliveryFormData>(() => {
     try {
       const saved = localStorage.getItem('el_almacen_delivery');
@@ -317,10 +650,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }
 
-  // Pure product total (No added shipping or tip fees!)
   const grandTotal = Math.max(0, cartSubtotal - discountAmount);
 
-  // Place Order & WhatsApp flow
+  // Place Order & Save in Orders state
   const placeOrder = (paymentMethod: PaymentMethodType = 'yape'): Order => {
     const orderNumber = Math.floor(1000 + Math.random() * 9000);
     const code = `ALM-${orderNumber}`;
@@ -335,14 +667,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       couponCode: couponCode || undefined,
       total: grandTotal,
       delivery: { ...deliveryData },
-      paymentMethod
+      paymentMethod,
+      status: 'pendiente'
     };
+
+    setOrders(prev => [newOrder, ...prev]);
+    upsertSupabaseOrder(newOrder);
 
     clearCart();
     setCouponCode('');
     closeCheckout();
 
-    // Trigger celebratory confetti
     try {
       confetti({
         particleCount: 80,
@@ -368,7 +703,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       .join('\n');
 
     const message = 
-`👋 *¡HOLA EL ALMACÉN! DESEO CONFIRMAR MI PEDIDO* 🛍️
+`👋 *¡HOLA ${businessConfig.name.toUpperCase()}! DESEO CONFIRMAR MI PEDIDO* 🛍️
 ━━━━━━━━━━━━━━━━━━━━
 📦 *N° DE PEDIDO:* #${order.code}
 📅 *Fecha:* ${new Date(order.createdAt).toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
@@ -384,15 +719,14 @@ ${itemsList}
 ━━━━━━━━━━━━━━━━━━━━
 💰 *TOTAL A PAGAR: S/ ${order.total.toFixed(2)}*
 ${order.discount > 0 ? `(Descuento aplicado: -S/ ${order.discount.toFixed(2)})\n` : ''}
-💳 *MÉTODO DE PAGO:* Yape al número *${PAYMENT_ACCOUNTS.yape.phoneFormatted}*
+💳 *MÉTODO DE PAGO:* Yape al número *${businessConfig.whatsappDisplay}*
 📲 *En breve realizaré el pago por Yape y enviaré la captura de mi comprobante por este chat.*
 ━━━━━━━━━━━━━━━━━━━━
-✨ _Pedido realizado desde el Catálogo de El Almacén - Todo en solo lugar._`;
+✨ _Pedido realizado desde el Catálogo de ${businessConfig.name} - ${businessConfig.tagline}._`;
 
     const encoded = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${BUSINESS_CONFIG.whatsappNumber}?text=${encoded}`;
+    const whatsappUrl = `https://wa.me/${businessConfig.whatsappNumber}?text=${encoded}`;
     
-    // Open WhatsApp directly
     window.open(whatsappUrl, '_blank');
   };
 
@@ -405,6 +739,19 @@ ${order.discount > 0 ? `(Descuento aplicado: -S/ ${order.discount.toFixed(2)})\n
         setShowSplash,
         activeTab,
         setActiveTab,
+        products,
+        addProduct,
+        updateProduct,
+        deleteProduct,
+        toggleProductStock,
+        resetCatalogToDefaults,
+        categories,
+        addCategory,
+        updateCategory,
+        deleteCategory,
+        resetCategoriesToDefaults,
+        businessConfig,
+        updateBusinessConfig,
         searchQuery,
         setSearchQuery,
         selectedCategory,
@@ -434,11 +781,24 @@ ${order.discount > 0 ? `(Descuento aplicado: -S/ ${order.discount.toFixed(2)})\n
         isCheckoutOpen,
         openCheckout,
         closeCheckout,
+        isAdminUnlocked,
+        isAdminModalOpen,
+        adminPin,
+        openAdminModal,
+        closeAdminModal,
+        unlockAdmin,
+        lockAdmin,
+        updateAdminPin,
+        orders,
+        updateOrderStatus,
+        deleteOrder,
         favorites,
         toggleFavorite,
         isFavorite,
         placeOrder,
         sendOrderToWhatsApp,
+        isSupabaseConnected,
+        reloadFromSupabase,
         toasts,
         showToast
       }}

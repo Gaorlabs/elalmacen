@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Flame,
   Sparkles,
+  ShieldCheck,
   X
 } from 'lucide-react';
 
@@ -33,7 +34,10 @@ export const Header: React.FC = () => {
     setSearchQuery,
     selectedCategory,
     setSelectedCategory,
-    setShowSplash
+    setShowSplash,
+    openAdminModal,
+    isAdminUnlocked,
+    businessConfig
   } = useApp();
 
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
@@ -95,16 +99,16 @@ export const Header: React.FC = () => {
             title="El Almacén - Todo en solo lugar (Ir al inicio)"
           >
             <img
-              src="/assets/aistudio/WhatsApp_Image_2026-10-17_at_12.27.58_PM_f3242823.jpeg"
-              alt="El Almacén"
+              src={businessConfig.logoUrl}
+              alt={businessConfig.name}
               className="h-10 sm:h-12 w-auto max-w-[50px] sm:max-w-[65px] object-contain rounded-lg shadow-sm bg-white p-0.5 border border-white/20 group-hover:scale-105 transition-transform"
             />
             <div className="flex flex-col">
               <span className="font-sans font-black text-lg sm:text-2xl tracking-[0.06em] text-white group-hover:text-amber-300 transition-colors uppercase leading-none">
-                EL ALMACÉN
+                {businessConfig.name}
               </span>
               <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 tracking-tight leading-tight mt-0.5 hidden xs:block">
-                Todo en solo lugar
+                {businessConfig.tagline}
               </span>
             </div>
           </button>
@@ -117,6 +121,20 @@ export const Header: React.FC = () => {
           >
             <Sparkles className="w-3 h-3 text-amber-300" />
             <span>Portada</span>
+          </button>
+
+          {/* Botón Acceso Panel de Administración */}
+          <button
+            onClick={openAdminModal}
+            className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 text-[10px] sm:text-[11px] font-black rounded-full transition-all active:scale-95 cursor-pointer border ${
+              isAdminUnlocked
+                ? 'bg-emerald-600 text-white border-emerald-400 animate-pulse'
+                : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border-amber-500/40'
+            }`}
+            title="Panel de Administración (Gestión de Productos y Empresa)"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
+            <span>{isAdminUnlocked ? 'Admin 🟢' : 'Admin 🔐'}</span>
           </button>
         </div>
 

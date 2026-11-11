@@ -5,9 +5,9 @@ import { ProductCard } from './ProductCard';
 import { Heart, ShoppingBag } from 'lucide-react';
 
 export const FavoritesTab: React.FC = () => {
-  const { favorites, setActiveTab } = useApp();
+  const { favorites, setActiveTab, products } = useApp();
 
-  const favoriteProducts = PRODUCTS.filter(p => favorites.includes(p.id));
+  const favoriteProducts = products.filter(p => favorites.includes(p.id));
 
   return (
     <div className="space-y-4 pb-24">

@@ -1,14 +1,13 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { AppTab } from '../types';
-import { Home, Compass, Heart, ShoppingBag } from 'lucide-react';
+import { Home, Compass, Heart, ShoppingBag, ShieldCheck } from 'lucide-react';
 
 export const BottomNav: React.FC = () => {
-  const { activeTab, setActiveTab, favorites, cartCount, openCartDrawer } = useApp();
+  const { activeTab, setActiveTab, favorites, cartCount, openCartDrawer, openAdminModal, isAdminUnlocked } = useApp();
 
   return (
     <div className="md:hidden sticky bottom-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-slate-200/90 dark:border-slate-800 transition-colors shadow-[0_-4px_20px_rgba(0,0,0,0.06)] mt-auto pb-[env(safe-area-inset-bottom,0px)]">
-      <nav className="w-full max-w-7xl mx-auto px-4 h-15 flex items-center justify-around">
+      <nav className="w-full max-w-7xl mx-auto px-2 h-15 flex items-center justify-around">
         {/* Inicio */}
         <button
           onClick={() => setActiveTab('inicio')}
@@ -76,7 +75,7 @@ export const BottomNav: React.FC = () => {
           )}
         </button>
 
-        {/* Mi Canasta / Carrito (Direct 1-tap access to cart) */}
+        {/* Mi Canasta / Carrito */}
         <button
           onClick={openCartDrawer}
           className="relative flex flex-col items-center justify-center flex-1 py-1.5 transition-all duration-200 text-slate-700 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 active:scale-95"
@@ -92,6 +91,24 @@ export const BottomNav: React.FC = () => {
             )}
           </div>
           <span className="text-[10px] mt-1 font-bold text-slate-900 dark:text-white">Canasta</span>
+        </button>
+
+        {/* Admin Tab */}
+        <button
+          onClick={openAdminModal}
+          className={`relative flex flex-col items-center justify-center flex-1 py-1.5 transition-all duration-200 ${
+            activeTab === 'admin'
+              ? 'text-rose-600 dark:text-rose-400 font-black scale-105'
+              : 'text-amber-600 dark:text-amber-400 hover:text-amber-700 font-medium'
+          }`}
+        >
+          <ShieldCheck className="w-5 h-5 stroke-[2px]" />
+          <span className="text-[10px] mt-1 tracking-tight font-extrabold">
+            {isAdminUnlocked ? 'Admin 🟢' : 'Admin'}
+          </span>
+          {activeTab === 'admin' && (
+            <span className="absolute bottom-0 w-8 h-1 bg-gradient-to-r from-red-500 to-rose-600 rounded-t-full shadow-xs" />
+          )}
         </button>
       </nav>
     </div>

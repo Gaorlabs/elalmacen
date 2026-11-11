@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export const HomeTab: React.FC = () => {
-  const { setSelectedCategory, setActiveTab, openProductDetail, selectedCategory } = useApp();
+  const { setSelectedCategory, setActiveTab, openProductDetail, selectedCategory, products, businessConfig } = useApp();
 
   // Banner slide index (0: Official Brand Portada with Logo, 1: SHEIN Mega Promo, 2: Flash Sale)
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -69,36 +69,36 @@ export const HomeTab: React.FC = () => {
   };
 
   // 3 Exact Featured Products from the user's SHEIN screenshot:
-  const sheinCaseDots = PRODUCTS.find(p => p.id === 'shein-case-dots') || PRODUCTS[0];
-  const sheinPetOveralls = PRODUCTS.find(p => p.id === 'shein-pet-overalls') || PRODUCTS[1];
-  const sheinCaseGlitter = PRODUCTS.find(p => p.id === 'shein-case-glitter') || PRODUCTS[2];
+  const sheinCaseDots = products.find(p => p.id === 'shein-case-dots') || products[0] || PRODUCTS[0];
+  const sheinPetOveralls = products.find(p => p.id === 'shein-pet-overalls') || products[1] || PRODUCTS[1];
+  const sheinCaseGlitter = products.find(p => p.id === 'shein-case-glitter') || products[2] || PRODUCTS[2];
 
   const featuredBannerCards = [
     {
       product: sheinCaseDots,
-      price: '10.30',
-      label: 'Funda Polka Dots',
-      image: sheinCaseDots.image
+      price: sheinCaseDots ? sheinCaseDots.price.toFixed(2) : '10.30',
+      label: sheinCaseDots ? sheinCaseDots.name : 'Funda Polka Dots',
+      image: sheinCaseDots ? sheinCaseDots.image : ''
     },
     {
       product: sheinPetOveralls,
-      price: '20.38',
-      label: 'Enterizo Overalls Mascota',
-      image: sheinPetOveralls.image
+      price: sheinPetOveralls ? sheinPetOveralls.price.toFixed(2) : '20.38',
+      label: sheinPetOveralls ? sheinPetOveralls.name : 'Enterizo Overalls Mascota',
+      image: sheinPetOveralls ? sheinPetOveralls.image : ''
     },
     {
       product: sheinCaseGlitter,
-      price: '9.29',
-      label: 'Funda Glitter Transparente',
-      image: sheinCaseGlitter.image
+      price: sheinCaseGlitter ? sheinCaseGlitter.price.toFixed(2) : '9.29',
+      label: sheinCaseGlitter ? sheinCaseGlitter.name : 'Funda Glitter Transparente',
+      image: sheinCaseGlitter ? sheinCaseGlitter.image : ''
     }
   ];
 
   // Filter products for sections
-  const flashSaleProducts = PRODUCTS.slice(0, 6);
+  const flashSaleProducts = products.slice(0, 6);
   const displayedProducts = selectedCategory === 'todos' 
-    ? PRODUCTS 
-    : PRODUCTS.filter(p => p.category === selectedCategory);
+    ? products 
+    : products.filter(p => p.category === selectedCategory);
 
   return (
     <div className="space-y-6 sm:space-y-8 pb-20 select-none">

@@ -1,14 +1,13 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { PRODUCTS } from '../data/products';
-import { BUSINESS_CONFIG } from '../data/shipping';
 import { Product } from '../types';
 import {
   ArrowRight,
   Sparkles,
   Moon,
   Sun,
-  Flame
+  Flame,
+  ShieldCheck
 } from 'lucide-react';
 
 export const SplashScreen: React.FC = () => {
@@ -18,7 +17,11 @@ export const SplashScreen: React.FC = () => {
     setActiveTab,
     isDarkMode,
     toggleDarkMode,
-    openProductDetail
+    openProductDetail,
+    openAdminModal,
+    isAdminUnlocked,
+    businessConfig,
+    products
   } = useApp();
 
   const handleEnterCatalog = () => {
@@ -33,7 +36,7 @@ export const SplashScreen: React.FC = () => {
   };
 
   // Featured top visual products to showcase
-  const visualHighlights = PRODUCTS.slice(0, 5);
+  const visualHighlights = products.slice(0, 5);
 
   return (
     <div className="flex-1 flex flex-col justify-between relative overflow-x-hidden transition-colors w-full pb-4">
@@ -49,13 +52,24 @@ export const SplashScreen: React.FC = () => {
           Tienda Abierta &bull; Catálogo Virtual
         </div>
 
-        <button
-          onClick={toggleDarkMode}
-          className="p-2 rounded-full bg-white/80 dark:bg-slate-800/80 shadow-xs border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:scale-105 active:scale-95 transition-all"
-          title="Cambiar tema"
-        >
-          {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={openAdminModal}
+            className="p-1.5 px-2.5 rounded-full bg-slate-900 text-amber-300 text-[10px] font-extrabold shadow-xs border border-amber-500/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
+            title="Acceder al Panel de Administración"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>{isAdminUnlocked ? 'Admin 🟢' : 'Admin'}</span>
+          </button>
+
+          <button
+            onClick={toggleDarkMode}
+            className="p-2 rounded-full bg-white/80 dark:bg-slate-800/80 shadow-xs border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            title="Cambiar tema"
+          >
+            {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
+          </button>
+        </div>
       </div>
 
       {/* Main Content Area */}
@@ -69,15 +83,15 @@ export const SplashScreen: React.FC = () => {
           <div className="relative p-2.5 sm:p-3 rounded-full bg-gradient-to-br from-[#FA436B] via-[#FF5876] to-[#FA7088] shadow-2xl border-2 border-white/90">
             <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-white flex items-center justify-center p-3 shadow-inner overflow-hidden">
               <img
-                src={BUSINESS_CONFIG.logoUrl}
-                alt="El Almacén - Todo en solo lugar"
+                src={businessConfig.logoUrl}
+                alt={`${businessConfig.name} - ${businessConfig.tagline}`}
                 className="w-full h-full object-contain filter drop-shadow-md hover:scale-105 transition-transform duration-300"
               />
             </div>
 
             {/* Emblem badge */}
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-900 font-black text-[10px] px-3.5 py-0.5 rounded-full shadow-lg border border-white uppercase tracking-wider whitespace-nowrap">
-              ⭐ Todo en solo lugar ⭐
+              ⭐ {businessConfig.tagline} ⭐
             </div>
           </div>
         </div>
@@ -85,13 +99,13 @@ export const SplashScreen: React.FC = () => {
         {/* Brand Title with web gradient */}
         <div className="space-y-1 mt-2">
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white uppercase drop-shadow-xs">
-            El Almacén
+            {businessConfig.name}
           </h1>
           <p className="text-xs sm:text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FA436B] via-rose-500 to-amber-500">
             ¡Novedades, Morrales, Cosmética, Juguetes & Regalos!
           </p>
           <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300">
-            <span>💜 Yape: {BUSINESS_CONFIG.whatsappDisplay}</span>
+            <span>💜 Yape: {businessConfig.whatsappDisplay}</span>
           </div>
         </div>
 
@@ -150,7 +164,7 @@ export const SplashScreen: React.FC = () => {
 
       {/* Footer on Splash - Clean & Short */}
       <footer className="w-full max-w-md mx-auto px-4 py-3 text-center z-10 text-[11px] text-slate-500 dark:text-slate-400">
-        <p>WhatsApp: <strong className="text-slate-800 dark:text-slate-200">{BUSINESS_CONFIG.whatsappDisplay}</strong></p>
+        <p>WhatsApp: <strong className="text-slate-800 dark:text-slate-200">{businessConfig.whatsappDisplay}</strong></p>
       </footer>
     </div>
   );

@@ -7,6 +7,8 @@ import { CartFloatingBar } from './components/CartFloatingBar';
 import { HomeTab } from './components/HomeTab';
 import { ExploreTab } from './components/ExploreTab';
 import { FavoritesTab } from './components/FavoritesTab';
+import { AdminTab } from './components/AdminTab';
+import { AdminAuthModal } from './components/AdminAuthModal';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
@@ -31,6 +33,7 @@ const MainAppContent: React.FC = () => {
               {activeTab === 'inicio' && <HomeTab />}
               {activeTab === 'explorar' && <ExploreTab />}
               {activeTab === 'favoritos' && <FavoritesTab />}
+              {activeTab === 'admin' && <AdminTab />}
             </main>
 
             {/* Floating Instant Cart Summary Bar in S/. */}
@@ -45,6 +48,7 @@ const MainAppContent: React.FC = () => {
         <ProductDetailModal />
         <CartDrawer />
         <CheckoutModal />
+        <AdminAuthModal />
 
         {/* Floating notifications */}
         <ToastContainer />

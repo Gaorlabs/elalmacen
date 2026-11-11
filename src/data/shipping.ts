@@ -1,13 +1,18 @@
-import { DistrictDelivery } from '../types';
+import { DistrictDelivery, BusinessConfig } from '../types';
 
-export const BUSINESS_CONFIG = {
+export const BUSINESS_CONFIG: BusinessConfig = {
   name: 'El Almacén',
   tagline: 'Todo en solo lugar',
   whatsappNumber: '51958607999',
   whatsappDisplay: '+51 958 607 999',
   supportHours: 'Lunes a Domingo de 8:00 AM a 10:00 PM',
   city: 'Perú',
-  logoUrl: '/assets/aistudio/WhatsApp_Image_2026-10-17_at_12.27.58_PM_f3242823.jpeg'
+  logoUrl: '/assets/aistudio/WhatsApp_Image_2026-10-17_at_12.27.58_PM_f3242823.jpeg',
+  yapePhone: '958607999',
+  yapeHolder: 'El Almacén - Oficial',
+  bcpAccount: '193-98241582-0-45',
+  bcpCci: '002-193009824158204518',
+  bcpHolder: 'El Almacén E.I.R.L.'
 };
 
 export const DISTRICTS: DistrictDelivery[] = [

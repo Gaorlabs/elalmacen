@@ -10,14 +10,16 @@ export const ExploreTab: React.FC = () => {
     searchQuery,
     setSearchQuery,
     selectedCategory,
-    setSelectedCategory
+    setSelectedCategory,
+    products,
+    categories
   } = useApp();
 
   const [sortBy, setSortBy] = useState<'popular' | 'price-asc' | 'price-desc' | 'rating'>('popular');
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter(product => {
+    return products.filter(product => {
       // Category filter
       if (selectedCategory !== 'todos' && product.category !== selectedCategory) {
         return false;
@@ -77,12 +79,12 @@ export const ExploreTab: React.FC = () => {
               : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-slate-300'
           }`}
         >
-          Todos ({PRODUCTS.length})
+          Todos ({products.length})
         </button>
 
-        {CATEGORIES.map(cat => {
+        {categories.map(cat => {
           const isSelected = selectedCategory === cat.id;
-          const count = PRODUCTS.filter(p => p.category === cat.id).length;
+          const count = products.filter(p => p.category === cat.id).length;
 
           return (
             <button

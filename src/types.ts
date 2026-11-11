@@ -1,16 +1,13 @@
-export type CategoryId = 
-  | 'belleza'
-  | 'moda'
-  | 'tecnologia'
-  | 'juguetes'
-  | 'libreria'
-  | 'regalos'
-  | 'audio'
-  | 'celulares'
-  | 'mascotas'
-  | 'hogar'
-  | 'ropa_mujer'
-  | 'joyeria';
+export type CategoryId = string;
+
+export interface CategoryInfo {
+  id: CategoryId;
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+  image: string;
+}
 
 export interface ProductVariant {
   id: string;
@@ -59,6 +56,8 @@ export interface DeliveryFormData {
 
 export type PaymentMethodType = 'yape' | 'bcp' | 'plin';
 
+export type OrderStatus = 'pendiente' | 'despachado' | 'completado' | 'cancelado';
+
 export interface Order {
   id: string;
   code: string; // e.g. ALM-9421
@@ -70,6 +69,22 @@ export interface Order {
   total: number;
   delivery: DeliveryFormData;
   paymentMethod: PaymentMethodType;
+  status?: OrderStatus;
 }
 
-export type AppTab = 'inicio' | 'explorar' | 'favoritos';
+export interface BusinessConfig {
+  name: string;
+  tagline: string;
+  whatsappNumber: string;
+  whatsappDisplay: string;
+  supportHours: string;
+  city: string;
+  logoUrl: string;
+  yapePhone: string;
+  yapeHolder: string;
+  bcpAccount: string;
+  bcpCci: string;
+  bcpHolder: string;
+}
+
+export type AppTab = 'inicio' | 'explorar' | 'favoritos' | 'admin';
