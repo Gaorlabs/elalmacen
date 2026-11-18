@@ -1,7 +1,7 @@
 import React from 'react';
 import { Product, ProductVariant } from '../types';
 import { useApp } from '../context/AppContext';
-import { Star, Plus, Minus, Heart, ShoppingBag } from 'lucide-react';
+import { Star, Plus, Minus, Heart, ShoppingBag, Camera } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -19,6 +19,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const selectedVariant: ProductVariant | undefined =
     product.variants && product.variants.length > 0 ? product.variants[0] : undefined;
+
+  const photoCount = product.images && product.images.length > 1 ? Math.min(3, product.images.length) : 1;
+  const variantCount = product.variants ? product.variants.length : 0;
 
   const isFav = isFavorite(product.id);
 
@@ -79,6 +82,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {product.badge}
           </div>
         ) : null}
+
+        {/* Bottom-Left Multi-Photo indicator if > 1 photo */}
+        {photoCount > 1 && (
+          <div className="absolute bottom-2 left-1.5 px-1.5 py-0.5 rounded-full bg-black/65 backdrop-blur-xs text-white text-[9px] font-black flex items-center gap-1 shadow-xs">
+            <Camera className="w-2.5 h-2.5 text-amber-300" />
+            <span>{photoCount}</span>
+          </div>
+        )}
 
         {/* Top-Right Favorite Heart */}
         <button
@@ -152,6 +163,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <h3 className="font-medium text-[11px] sm:text-xs text-slate-800 dark:text-slate-100 leading-tight line-clamp-2 mt-1 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
             {product.name}
           </h3>
+
+          {/* Variants indicator strip (color dots or count) */}
+          {variantCount > 0 && (
+            <div className="mt-1.5 flex items-center gap-1 flex-wrap">
+              {product.variants!.slice(0, 5).map(v =>
+                v.colorHex ? (
+                  <span
+                    key={v.id}
+                    className="w-2.5 h-2.5 rounded-full border border-black/20 shrink-0"
+                    style={{ backgroundColor: v.colorHex }}
+                    title={v.name}
+                  />
+                ) : null
+              )}
+              <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                {variantCount} {product.variantLabel ? product.variantLabel.toLowerCase() + 's' : 'opciones'}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Social Proof & Rating */}

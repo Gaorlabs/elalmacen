@@ -13,6 +13,8 @@ export interface ProductVariant {
   id: string;
   name: string;
   priceModifier?: number; // difference in S/.
+  colorHex?: string;
+  imageIndex?: number; // 0, 1, or 2 to link to a specific product photo
 }
 
 export interface Product {
@@ -26,9 +28,11 @@ export interface Product {
   rating: number;
   reviewsCount: number;
   image: string;
+  images?: string[]; // Up to 3 photos per product
   badge?: 'Más Vendido' | 'Novedad' | 'Oferta Top' | 'K-Beauty' | 'Garantía 100%';
   description: string;
   highlights: string[];
+  variantLabel?: string; // e.g., "Color", "Tipo", "Forma", "Diseño"
   variants?: ProductVariant[];
   stock: number;
 }

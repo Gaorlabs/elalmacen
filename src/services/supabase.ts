@@ -83,22 +83,33 @@ export const fetchSupabaseProducts = async (): Promise<Product[] | null> => {
     }
     if (!data) return null;
 
-    return data.map((item: any) => ({
-      id: item.id,
-      name: item.name,
-      subtitle: item.subtitle || '',
-      category: item.category,
-      categoryName: item.category_name || 'General',
-      price: Number(item.price),
-      originalPrice: item.original_price ? Number(item.original_price) : undefined,
-      rating: Number(item.rating || 4.9),
-      reviewsCount: Number(item.reviews_count || 15),
-      image: item.image,
-      badge: item.badge || undefined,
-      description: item.description || '',
-      highlights: Array.isArray(item.highlights) ? item.highlights : [],
-      stock: Number(item.stock ?? 10)
-    }));
+    return data.map((item: any) => {
+      const parsedImages = Array.isArray(item.images)
+        ? item.images.filter((u: unknown) => typeof u === 'string' && u.trim().length > 0).slice(0, 3)
+        : [];
+      const primaryImage = item.image || parsedImages[0] || '';
+      const finalImages = parsedImages.length > 0 ? parsedImages : primaryImage ? [primaryImage] : [];
+
+      return {
+        id: item.id,
+        name: item.name,
+        subtitle: item.subtitle || '',
+        category: item.category,
+        categoryName: item.category_name || 'General',
+        price: Number(item.price),
+        originalPrice: item.original_price ? Number(item.original_price) : undefined,
+        rating: Number(item.rating || 4.9),
+        reviewsCount: Number(item.reviews_count || 15),
+        image: primaryImage,
+        images: finalImages,
+        badge: item.badge || undefined,
+        description: item.description || '',
+        highlights: Array.isArray(item.highlights) ? item.highlights : [],
+        variantLabel: item.variant_label || undefined,
+        variants: Array.isArray(item.variants) && item.variants.length > 0 ? item.variants : undefined,
+        stock: Number(item.stock ?? 10)
+      };
+    });
   } catch (e: any) {
     if (e?.code !== 'PGRST205') {
       console.warn('Supabase fetchProducts notice:', e?.message || e);
@@ -111,26 +122,47 @@ export const upsertSupabaseProduct = async (product: Product): Promise<boolean> 
   const client = getSupabaseClient();
   if (!client) return false;
 
+  const normalizedImages = (
+    product.images && product.images.length > 0 ? product.images : [product.image]
+  )
+    .filter(Boolean)
+    .slice(0, 3);
+
+  const baseRow = {
+    id: product.id,
+    name: product.name,
+    subtitle: product.subtitle,
+    category: product.category,
+    category_name: product.categoryName,
+    price: product.price,
+    original_price: product.originalPrice || null,
+    rating: product.rating,
+    reviews_count: product.reviewsCount,
+    image: normalizedImages[0] || product.image,
+    badge: product.badge || null,
+    description: product.description,
+    highlights: product.highlights || [],
+    stock: product.stock
+  };
+
   try {
-    const row = {
-      id: product.id,
-      name: product.name,
-      subtitle: product.subtitle,
-      category: product.category,
-      category_name: product.categoryName,
-      price: product.price,
-      original_price: product.originalPrice || null,
-      rating: product.rating,
-      reviews_count: product.reviewsCount,
-      image: product.image,
-      badge: product.badge || null,
-      description: product.description,
-      highlights: product.highlights || [],
-      stock: product.stock
+    const fullRow = {
+      ...baseRow,
+      images: normalizedImages,
+      variants: product.variants || [],
+      variant_label: product.variantLabel || null
     };
 
-    const { error } = await client.from('products').upsert(row);
-    if (error) throw error;
+    const { error } = await client.from('products').upsert(fullRow);
+    if (error) {
+      // Fallback if user has not yet executed ALTER TABLE for images/variants columns
+      if (error.code === 'PGRST204' || error.message?.includes('column')) {
+        const { error: fallbackError } = await client.from('products').upsert(baseRow);
+        if (fallbackError) throw fallbackError;
+        return true;
+      }
+      throw error;
+    }
     return true;
   } catch (e) {
     return false;
@@ -432,12 +464,20 @@ CREATE TABLE IF NOT EXISTS public.products (
   rating NUMERIC DEFAULT 4.9,
   reviews_count INT DEFAULT 15,
   image TEXT NOT NULL,
+  images JSONB DEFAULT '[]'::jsonb,
   badge TEXT,
   description TEXT,
   highlights JSONB DEFAULT '[]'::jsonb,
+  variant_label TEXT,
+  variants JSONB DEFAULT '[]'::jsonb,
   stock INT DEFAULT 10,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- ACTUALIZACIÓN SI YA TENÍAS LA TABLA CREADA (3 FOTOS Y VARIANTES)
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS variant_label TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS variants JSONB DEFAULT '[]'::jsonb;
 
 CREATE TABLE IF NOT EXISTS public.categories (
   id TEXT PRIMARY KEY,

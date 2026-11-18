@@ -11,7 +11,10 @@ import {
   Heart,
   ShieldCheck,
   ShoppingBag,
-  MessageCircle
+  MessageCircle,
+  ChevronLeft,
+  ChevronRight,
+  Camera
 } from 'lucide-react';
 
 export const ProductDetailModal: React.FC = () => {
@@ -20,10 +23,12 @@ export const ProductDetailModal: React.FC = () => {
     closeProductDetail,
     addToCart,
     toggleFavorite,
-    isFavorite
+    isFavorite,
+    businessConfig
   } = useApp();
 
   const [quantity, setQuantity] = useState<number>(1);
+  const [activePhotoIdx, setActivePhotoIdx] = useState<number>(0);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
     selectedProduct?.variants && selectedProduct.variants.length > 0
       ? selectedProduct.variants[0]
@@ -33,6 +38,7 @@ export const ProductDetailModal: React.FC = () => {
   React.useEffect(() => {
     if (selectedProduct) {
       setQuantity(1);
+      setActivePhotoIdx(0);
       setSelectedVariant(
         selectedProduct.variants && selectedProduct.variants.length > 0
           ? selectedProduct.variants[0]
@@ -43,9 +49,34 @@ export const ProductDetailModal: React.FC = () => {
 
   if (!selectedProduct) return null;
 
+  // Build up to 3 unique valid photos
+  const productPhotos: string[] = React.useMemo(() => {
+    const list = (selectedProduct.images && selectedProduct.images.length > 0
+      ? selectedProduct.images
+      : [selectedProduct.image]
+    )
+      .filter(Boolean)
+      .slice(0, 3);
+    return list.length > 0 ? list : [selectedProduct.image];
+  }, [selectedProduct]);
+
+  const safePhotoIdx = activePhotoIdx < productPhotos.length ? activePhotoIdx : 0;
+  const currentPhoto = productPhotos[safePhotoIdx] || selectedProduct.image;
+
   const isFav = isFavorite(selectedProduct.id);
   const unitPrice = selectedProduct.price + (selectedVariant?.priceModifier || 0);
   const totalPrice = unitPrice * quantity;
+
+  const handleSelectVariant = (variant: ProductVariant) => {
+    setSelectedVariant(variant);
+    if (
+      typeof variant.imageIndex === 'number' &&
+      variant.imageIndex >= 0 &&
+      variant.imageIndex < productPhotos.length
+    ) {
+      setActivePhotoIdx(variant.imageIndex);
+    }
+  };
 
   const handleAddToCart = () => {
     addToCart(selectedProduct, selectedVariant, quantity);
@@ -55,9 +86,9 @@ export const ProductDetailModal: React.FC = () => {
   const handleConsultWhatsApp = () => {
     const variantText = selectedVariant ? ` (${selectedVariant.name})` : '';
     const text = encodeURIComponent(
-      `Hola El Almacén, deseo consultar sobre el producto: *${selectedProduct.name}*${variantText} (Precio: S/ ${unitPrice.toFixed(2)}). ¿Tienen disponibilidad?`
+      `Hola ${businessConfig.name}, deseo consultar sobre el producto: *${selectedProduct.name}*${variantText} (Precio: S/ ${unitPrice.toFixed(2)}). ¿Tienen disponibilidad?`
     );
-    window.open(`https://wa.me/${BUSINESS_CONFIG.whatsappNumber}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${businessConfig.whatsappNumber || BUSINESS_CONFIG.whatsappNumber}?text=${text}`, '_blank');
   };
 
   return (
@@ -66,24 +97,48 @@ export const ProductDetailModal: React.FC = () => {
       onClick={closeProductDetail}
     >
       <div
-        className="relative w-full max-w-lg mx-auto bg-white dark:bg-slate-900 rounded-t-[28px] sm:rounded-3xl shadow-2xl border-t sm:border border-slate-200 dark:border-slate-800 max-h-[85dvh] flex flex-col overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-200"
+        className="relative w-full max-w-lg mx-auto bg-white dark:bg-slate-900 rounded-t-[28px] sm:rounded-3xl shadow-2xl border-t sm:border border-slate-200 dark:border-slate-800 max-h-[88dvh] flex flex-col overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-200"
         onClick={e => e.stopPropagation()}
       >
         {/* Mobile Pull Drag Handle */}
         <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto my-1.5 flex-shrink-0 sm:hidden" />
 
-        {/* Compact Image Header */}
-        <div className="relative w-full h-44 sm:h-52 bg-slate-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden">
+        {/* Multi-Photo Gallery Header (Up to 3 photos) */}
+        <div className="relative w-full h-56 sm:h-64 bg-slate-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden group">
           <img
-            src={selectedProduct.image}
-            alt={selectedProduct.name}
-            className="w-full h-full object-cover"
+            src={currentPhoto}
+            alt={`${selectedProduct.name} - Foto ${safePhotoIdx + 1}`}
+            className="w-full h-full object-cover transition-all duration-300"
           />
+
+          {/* Prev / Next Arrows if multiple photos */}
+          {productPhotos.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={() =>
+                  setActivePhotoIdx(prev => (prev - 1 + productPhotos.length) % productPhotos.length)
+                }
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-xs transition-all cursor-pointer"
+                title="Foto anterior"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setActivePhotoIdx(prev => (prev + 1) % productPhotos.length)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/45 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-xs transition-all cursor-pointer"
+                title="Siguiente foto"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </>
+          )}
 
           {/* Close Button */}
           <button
             onClick={closeProductDetail}
-            className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:scale-105 active:scale-95 shadow-md backdrop-blur-xs transition-all z-10"
+            className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:scale-105 active:scale-95 shadow-md backdrop-blur-xs transition-all z-10 cursor-pointer"
             title="Cerrar"
           >
             <X className="w-4 h-4" />
@@ -92,7 +147,7 @@ export const ProductDetailModal: React.FC = () => {
           {/* Favorite Button */}
           <button
             onClick={() => toggleFavorite(selectedProduct.id)}
-            className="absolute top-2.5 left-2.5 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:scale-105 active:scale-95 shadow-md backdrop-blur-xs transition-all z-10"
+            className="absolute top-2.5 left-2.5 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 flex items-center justify-center hover:scale-105 active:scale-95 shadow-md backdrop-blur-xs transition-all z-10 cursor-pointer"
             title="Guardar favorito"
           >
             <Heart
@@ -113,7 +168,43 @@ export const ProductDetailModal: React.FC = () => {
               </span>
             )}
           </div>
+
+          {/* Photo Counter Badge */}
+          {productPhotos.length > 1 && (
+            <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/70 text-white text-[10px] font-black flex items-center gap-1 backdrop-blur-xs">
+              <Camera className="w-3 h-3 text-amber-300" />
+              <span>
+                {safePhotoIdx + 1} / {productPhotos.length}
+              </span>
+            </div>
+          )}
         </div>
+
+        {/* Interactive Thumbnail Strip (when 2 or 3 photos exist) */}
+        {productPhotos.length > 1 && (
+          <div className="px-3.5 pt-2.5 pb-1 flex items-center gap-2 bg-slate-50 dark:bg-slate-900/80 border-b border-slate-100 dark:border-slate-800">
+            <span className="text-[10px] font-black uppercase text-slate-400 mr-1">
+              Fotos ({productPhotos.length}/3):
+            </span>
+            {productPhotos.map((imgUrl, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setActivePhotoIdx(idx)}
+                className={`relative w-12 h-12 rounded-xl overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
+                  safePhotoIdx === idx
+                    ? 'border-[#FA436B] ring-2 ring-[#FA436B]/30 scale-105'
+                    : 'border-slate-200 dark:border-slate-700 opacity-70 hover:opacity-100'
+                }`}
+              >
+                <img src={imgUrl} alt={`Foto ${idx + 1}`} className="w-full h-full object-cover" />
+                <span className="absolute bottom-0.5 right-0.5 px-1 rounded bg-black/70 text-white text-[8px] font-black">
+                  {idx + 1}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Content Body: Compact, High Visibility */}
         <div className="flex-1 overflow-y-auto no-scrollbar p-3.5 sm:p-4 space-y-3">
@@ -130,13 +221,18 @@ export const ProductDetailModal: React.FC = () => {
                 </span>
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold ml-1 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Stock Disponible
+                  Stock: {selectedProduct.stock}
                 </span>
               </div>
 
               <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug">
                 {selectedProduct.name}
               </h2>
+              {selectedProduct.subtitle && (
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  {selectedProduct.subtitle}
+                </p>
+              )}
             </div>
 
             {/* Price Box */}
@@ -155,29 +251,49 @@ export const ProductDetailModal: React.FC = () => {
             </div>
           </div>
 
-          {/* Variant Selector (Compact Pills) */}
+          {/* Variant Selector (Color, Tipo, Forma, etc.) */}
           {selectedProduct.variants && selectedProduct.variants.length > 0 && (
-            <div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1.5">
-                Selecciona Opción / Variante:
-              </span>
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            <div className="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                  {selectedProduct.variantLabel
+                    ? `Elige ${selectedProduct.variantLabel}:`
+                    : 'Selecciona Opción / Variante:'}
+                </span>
+                {selectedVariant && (
+                  <span className="text-[11px] font-black text-rose-600 dark:text-rose-400">
+                    {selectedVariant.name}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5">
                 {selectedProduct.variants.map(variant => {
                   const isSelected = selectedVariant?.id === variant.id;
                   return (
                     <button
                       key={variant.id}
-                      onClick={() => setSelectedVariant(variant)}
-                      className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                      type="button"
+                      onClick={() => handleSelectVariant(variant)}
+                      className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
                         isSelected
-                          ? 'bg-rose-600 border-rose-600 text-white shadow-xs'
-                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300'
+                          ? 'bg-[#FA436B] border-[#FA436B] text-white shadow-sm scale-[1.02]'
+                          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-rose-300'
                       }`}
                     >
+                      {variant.colorHex && (
+                        <span
+                          className="w-3.5 h-3.5 rounded-full border border-black/20 shrink-0 shadow-2xs"
+                          style={{ backgroundColor: variant.colorHex }}
+                        />
+                      )}
                       <span>{variant.name}</span>
                       {variant.priceModifier ? (
-                        <span className={`text-[10px] ${isSelected ? 'text-white' : 'text-rose-600'}`}>
-                          +S/ {variant.priceModifier.toFixed(2)}
+                        <span
+                          className={`text-[10px] font-black ${
+                            isSelected ? 'text-amber-200' : 'text-rose-600 dark:text-rose-400'
+                          }`}
+                        >
+                          {variant.priceModifier > 0 ? `+S/ ${variant.priceModifier.toFixed(2)}` : `-S/ ${Math.abs(variant.priceModifier).toFixed(2)}`}
                         </span>
                       ) : null}
                     </button>
@@ -185,6 +301,13 @@ export const ProductDetailModal: React.FC = () => {
                 })}
               </div>
             </div>
+          )}
+
+          {/* Description if present */}
+          {selectedProduct.description && (
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              {selectedProduct.description}
+            </p>
           )}
 
           {/* Quick Highlights (Compact bullet chips, no text walls) */}
