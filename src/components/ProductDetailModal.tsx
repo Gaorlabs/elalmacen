@@ -47,10 +47,9 @@ export const ProductDetailModal: React.FC = () => {
     }
   }, [selectedProduct]);
 
-  if (!selectedProduct) return null;
-
-  // Build up to 3 unique valid photos
+  // Build up to 3 unique valid photos (called unconditionally to satisfy Rules of Hooks)
   const productPhotos: string[] = React.useMemo(() => {
+    if (!selectedProduct) return [];
     const list = (selectedProduct.images && selectedProduct.images.length > 0
       ? selectedProduct.images
       : [selectedProduct.image]
@@ -59,6 +58,8 @@ export const ProductDetailModal: React.FC = () => {
       .slice(0, 3);
     return list.length > 0 ? list : [selectedProduct.image];
   }, [selectedProduct]);
+
+  if (!selectedProduct) return null;
 
   const safePhotoIdx = activePhotoIdx < productPhotos.length ? activePhotoIdx : 0;
   const currentPhoto = productPhotos[safePhotoIdx] || selectedProduct.image;
