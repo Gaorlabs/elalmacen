@@ -157,15 +157,16 @@ export const Header: React.FC = () => {
             </button>
           </div>
 
-          {/* Mobile Right Quick Icons (Portada, Cart, Theme) */}
+          {/* Mobile Right Quick Icons (Portal, Cart, Theme) */}
           <div className="flex md:hidden items-center gap-1 shrink-0 text-white">
             <button
               onClick={() => setShowSplash(true)}
-              className="p-1.5 text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
-              title="Ver Portada"
-              aria-label="Portada"
+              className="flex items-center gap-1 px-2 py-1 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-300 hover:text-white text-[10px] font-black transition-colors cursor-pointer"
+              title="Ir al Portal de Inicio"
+              aria-label="Ir al Portal"
             >
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-3 h-3 text-amber-300" />
+              <span>Portal</span>
             </button>
 
             <button

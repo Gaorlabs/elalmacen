@@ -16,6 +16,7 @@ import { QRCodeModal } from './components/QRCodeModal';
 import { ToastContainer } from './components/ToastContainer';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { PWAInstallButton } from './components/PWAInstallButton';
+import { PullToRefresh } from './components/PullToRefresh';
 
 const MainAppContent: React.FC = () => {
   const { showSplash, activeTab, isQRModalOpen, closeQRModal } = useApp();
@@ -25,7 +26,8 @@ const MainAppContent: React.FC = () => {
       <OfflineIndicator />
 
       {/* Naturally Responsive Container (full-width on mobile, max-w-7xl on desktop) */}
-      <div className="w-full max-w-7xl mx-auto min-h-dvh flex flex-col relative transition-colors bg-white dark:bg-slate-900 shadow-sm">
+      <PullToRefresh>
+        <div className="w-full max-w-7xl mx-auto min-h-dvh flex flex-col relative transition-colors bg-white dark:bg-slate-900 shadow-sm">
         {showSplash ? (
           <SplashScreen />
         ) : (
@@ -61,7 +63,8 @@ const MainAppContent: React.FC = () => {
 
         {/* Floating notifications */}
         <ToastContainer />
-      </div>
+        </div>
+      </PullToRefresh>
     </div>
   );
 };
