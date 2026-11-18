@@ -182,14 +182,14 @@ export const Header: React.FC = () => {
 
             <button
               onClick={toggleDarkMode}
-              className="p-1.5 hover:text-amber-400 transition-colors cursor-pointer"
-              title={isDarkMode ? 'Modo claro' : 'Modo oscuro'}
-              aria-label="Cambiar tema"
+              className="p-1.5 rounded-full bg-neutral-900 border border-neutral-700 hover:text-amber-400 transition-colors cursor-pointer"
+              title={isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+              aria-label="Cambiar modo claro u oscuro"
             >
               {isDarkMode ? (
                 <Sun className="w-4 h-4 text-amber-400" />
               ) : (
-                <Moon className="w-4 h-4 text-slate-300" />
+                <Moon className="w-4 h-4 text-slate-200" />
               )}
             </button>
           </div>
