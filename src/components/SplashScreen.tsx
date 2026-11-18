@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   QrCode
 } from 'lucide-react';
+import { PWAInstallButton } from './PWAInstallButton';
 
 export const SplashScreen: React.FC = () => {
   const {
@@ -170,6 +171,8 @@ export const SplashScreen: React.FC = () => {
             <span className="tracking-wide uppercase">Ingresar al Catálogo</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
           </button>
+
+          <PWAInstallButton variant="card" />
         </div>
       </main>
 

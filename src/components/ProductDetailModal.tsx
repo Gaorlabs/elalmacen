@@ -29,6 +29,7 @@ export const ProductDetailModal: React.FC = () => {
 
   const [quantity, setQuantity] = useState<number>(1);
   const [activePhotoIdx, setActivePhotoIdx] = useState<number>(0);
+  const touchStartX = React.useRef<number | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
     selectedProduct?.variants && selectedProduct.variants.length > 0
       ? selectedProduct.variants[0]
@@ -104,8 +105,26 @@ export const ProductDetailModal: React.FC = () => {
         {/* Mobile Pull Drag Handle */}
         <div className="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto my-1.5 flex-shrink-0 sm:hidden" />
 
-        {/* Multi-Photo Gallery Header (Up to 3 photos) */}
-        <div className="relative w-full h-56 sm:h-64 bg-slate-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden group">
+        {/* Multi-Photo Gallery Header (Up to 3 photos, swipeable on mobile) */}
+        <div
+          className="relative w-full h-56 sm:h-64 bg-slate-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden group select-none"
+          onTouchStart={e => {
+            touchStartX.current = e.touches[0]?.clientX ?? null;
+          }}
+          onTouchEnd={e => {
+            if (touchStartX.current === null || productPhotos.length <= 1) return;
+            const endX = e.changedTouches[0]?.clientX ?? touchStartX.current;
+            const diff = touchStartX.current - endX;
+            if (Math.abs(diff) > 35) {
+              if (diff > 0) {
+                setActivePhotoIdx(prev => (prev + 1) % productPhotos.length);
+              } else {
+                setActivePhotoIdx(prev => (prev - 1 + productPhotos.length) % productPhotos.length);
+              }
+            }
+            touchStartX.current = null;
+          }}
+        >
           <img
             src={currentPhoto}
             alt={`${selectedProduct.name} - Foto ${safePhotoIdx + 1}`}
@@ -345,7 +364,7 @@ export const ProductDetailModal: React.FC = () => {
         </div>
 
         {/* Sticky Action Bottom Bar */}
-        <div className="p-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center gap-2.5 flex-shrink-0">
+        <div className="p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center gap-2.5 flex-shrink-0">
           {/* Stepper controls */}
           <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700">
             <button

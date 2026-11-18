@@ -39,7 +39,20 @@
   scrollbar-width: none;
 }
 
-/* Custom smooth transitions */
+/* Native mobile app feel */
+html,
+body {
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
 }

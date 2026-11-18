@@ -14,14 +14,18 @@ import { CartDrawer } from './components/CartDrawer';
 import { CheckoutModal } from './components/CheckoutModal';
 import { QRCodeModal } from './components/QRCodeModal';
 import { ToastContainer } from './components/ToastContainer';
+import { OfflineIndicator } from './components/OfflineIndicator';
+import { PWAInstallButton } from './components/PWAInstallButton';
 
 const MainAppContent: React.FC = () => {
   const { showSplash, activeTab, isQRModalOpen, closeQRModal } = useApp();
 
   return (
-    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950 text-slate-800 dark:text-slate-100 antialiased flex flex-col">
-      {/* Naturally Responsive Container (full-width on mobile, max-w-7xl on desktop like SHEIN) */}
-      <div className="w-full max-w-7xl mx-auto min-h-screen flex flex-col relative transition-colors bg-white dark:bg-slate-900 shadow-sm">
+    <div className="min-h-dvh bg-neutral-100 dark:bg-neutral-950 text-slate-800 dark:text-slate-100 antialiased flex flex-col">
+      <OfflineIndicator />
+
+      {/* Naturally Responsive Container (full-width on mobile, max-w-7xl on desktop) */}
+      <div className="w-full max-w-7xl mx-auto min-h-dvh flex flex-col relative transition-colors bg-white dark:bg-slate-900 shadow-sm">
         {showSplash ? (
           <SplashScreen />
         ) : (
@@ -30,12 +34,15 @@ const MainAppContent: React.FC = () => {
             <Header />
 
             {/* Scrollable Tab Views */}
-            <main className="flex-1 px-3 sm:px-4 pt-3 pb-8">
+            <main className="flex-1 px-3 sm:px-4 pt-3 pb-6">
               {activeTab === 'inicio' && <HomeTab />}
               {activeTab === 'explorar' && <ExploreTab />}
               {activeTab === 'favoritos' && <FavoritesTab />}
               {activeTab === 'admin' && <AdminTab />}
             </main>
+
+            {/* Floating PWA Install Prompt on Mobile */}
+            <PWAInstallButton variant="floating" />
 
             {/* Floating Instant Cart Summary Bar in S/. */}
             <CartFloatingBar />

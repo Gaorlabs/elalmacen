@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FA436B" />
+      <stop offset="100%" stop-color="#FA7088" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+  <g fill="none" stroke="#FFFFFF" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M136 184h240l-20 208H156L136 184z" fill="#FFFFFF" fill-opacity="0.16" />
+    <path d="M196 184v-28c0-33.1 26.9-60 60-60s60 26.9 60 60v28" />
+  </g>
+  <text x="256" y="325" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="96" fill="#FDE047">EA</text>
+</svg>
